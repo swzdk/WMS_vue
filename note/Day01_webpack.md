@@ -698,6 +698,14 @@ babel 的介绍 => 用于处理高版本 js语法 的兼容性  [babel官网](ht
 
 解决: 让webpack配合babel-loader 对js语法做处理
 
+**@babel/core：**
+
+@babel/core是babel的核心库，所有的核心Api都在这个库里，这些Api供babel-loader调用
+
+**@babel/preset-env：**
+
+这是一个预设的插件集合，包含了一组相关的插件，Bable中是通过各种插件来指导如何进行代码转换。该插件包含所有es6转化为es5的翻译规则
+
 [babel-loader文档](https://webpack.docschina.org/loaders/babel-loader/)
 
   1. 安装包
