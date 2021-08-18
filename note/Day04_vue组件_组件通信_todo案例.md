@@ -456,10 +456,38 @@ export default {
 步骤:
 
 1. 创建组件components/MyProduct.vue - 复制下面标签
-
 2. 组件内在props定义变量, 用于接收外部传入的值
-
 3. App.vue中引入注册组件, 使用时, 传入具体数据给组件显示
+
+静态结构
+
+```html
+<template>
+  <div class="my-product">
+    <h3>标题: 好吃的口水鸡</h3>
+    <p>价格: 50元</p>
+    <p>开业大酬宾, 全场8折</p>
+  </div>
+</template>
+
+<script>
+export default {
+}
+</script>
+
+<style>
+.my-product {
+  width: 400px;
+  padding: 20px;
+  border: 2px solid #000;
+  border-radius: 5px;
+  margin: 10px;
+}
+</style>
+
+```
+
+
 
 components/MyProduct.vue - 准备标签
 
@@ -665,7 +693,6 @@ export default {
   methods: {
     subFn(){
       this.$emit('subprice', this.index, 1) // 子向父
-      eventBus.$emit("send", this.index, 1) // 跨组件
     }
   }
 }
