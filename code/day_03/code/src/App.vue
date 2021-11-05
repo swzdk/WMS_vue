@@ -1,9 +1,8 @@
 <template>
   <div>
-    购物车商品总价：
-    <!-- 商品是否大于500 符合条件可使用400的优惠券 否则不可使用 -->
-    {{ totalPrice }}
-    {{ totalPrice }}
+    <ul>
+      <li :class="{active: index === 0}" v-for="(item, index) in navs" :key="index">高中起点</li>
+    </ul>
   </div>
 </template>
 
@@ -11,25 +10,39 @@
 export default {
   data () {
     return {
-      total: 5,
-      price: 98,
-      coupon: 400
-    }
-  },
-
-  computed: {
-    totalPrice () {
-      console.log('计算')
-      return this.total * this.price >= 500 ? this.total * this.price - this.coupon : this.total * this.price
+      navs: ['大学起点', '高中起点']
     }
   },
 
   created () {
+
+  },
+
+  methods: {
 
   }
 }
 </script>
 
 <style scoped lang='less'>
-
+ul {
+  list-style: none;
+  border-radius: 10px;
+  width: 200px;
+  overflow: hidden;
+  padding: 0;
+  li {
+    float: left;
+    width: 100px;
+    height: 40px;
+    background-color: #ccc;
+    color: #fff;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+  }
+  .active {
+    background-color: blue;
+  }
+}
 </style>

@@ -196,7 +196,75 @@ export default {
 </style>
 ```
 
-> 总结: 就是把类名保存在vue变量中赋予给标签
+案例应用：
+
+![image-20211105190208881](images/image-20211105190208881.png)
+
++ 结构
+
+  ```html
+  <template>
+    <div>
+      <ul>
+        <li class="active">大学起点</li>
+        <li>高中起点</li>
+      </ul>
+    </div>
+  </template>
+  ```
+
++ 样式
+
+  ```less
+  ul {
+    list-style: none;
+    border-radius: 10px;
+    width: 200px;
+    overflow: hidden;
+    padding: 0;
+    li {
+      float: left;
+      width: 100px;
+      height: 40px;
+      background-color: #ccc;
+      color: #fff;
+      text-align: center;
+      line-height: 40px;
+      cursor: pointer;
+    }
+    .active {
+      background-color: blue;
+    }
+  }
+  ```
+
++ 通过数据渲染
+
+  ```js
+  data () {
+    return {
+      navs: ['大学起点', '高中起点']
+    }
+  }
+  ```
+
++ 循环生成
+
+  ```html
+  <ul>
+    <li v-for="(item, index) in navs" :key="index">高中起点</li>
+  </ul>
+  ```
+
++ 动态绑定类名
+
+  ```html
+  <ul>
+    <li :class="{active: index === 0}" v-for="(item, index) in navs" :key="index">高中起点</li>
+  </ul>
+  ```
+
+  
 
 ### 1.3_vue基础-动态style
 
