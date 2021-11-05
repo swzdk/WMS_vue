@@ -72,13 +72,13 @@ http://localhost:3000, 看到如下页面就成功了 - 等着明天上课启动
    文档: https://vant-contrib.gitee.io/vant/#/zh-CN/quickstart
 
    ```bash
-yarn add babel-plugin-import  -D
+   yarn add babel-plugin-import  -D
    ```
    
    在babel.config.js - 添加插件配置
 
    ```js
-plugins: [
+   plugins: [
        ['import', {
            libraryName: 'vant',
            libraryDirectory: 'es',
@@ -472,7 +472,43 @@ App.vue中留好router-view显示路由页面
    })
    ```
    
-4. 把数据请求回来, 用van-image和p标签展示推荐歌单和歌单名字
+4. 静态结构
+
+   ```html
+   <template>
+     <div class="home">
+      <p class="title">推荐歌单</p>
+       <van-row gutter="6">
+         <van-col span="8">
+           <van-image width="100%" height="3rem" fit="cover" src="obj.picUrl" />
+           <p class="song_name">123123</p>
+         </van-col>
+         
+       </van-row>
+     </div>
+   </template>
+   
+   <script>
+   export default {
+     data () {
+       return {
+   
+       }
+     }
+   }
+   </script>
+   
+   <style scoped lang='less'>
+   .home {
+     padding: 0 10px;
+   }
+   </style>
+   
+   ```
+   
+   
+   
+6. 把数据请求回来, 用van-image和p标签展示推荐歌单和歌单名字
 
    ```vue
    <template>

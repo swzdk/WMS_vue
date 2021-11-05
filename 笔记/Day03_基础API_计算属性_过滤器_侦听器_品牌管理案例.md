@@ -161,286 +161,7 @@ export default {
 
 > 总结:  改变原数组的方法才能让v-for更新
 
-### 1.1_vue基础_v-for就地更新
-
-`v-for` 的默认行为会尝试原地修改元素而不是移动它们。
-
-> 详解v-for就地更新流程(可以看ppt动画)
-
-![image-20210414215302318](images/image-20210414215302318.png)
-
-这种 虚拟DOM对比方式, 可以提高性能 - 但是还不够高
-
-### 1.2_vue基础_虚拟dom
-
-> 目标: 了解虚拟DOM的概念
-
-.vue文件中的template里写的标签, 都是模板, 都要被vue处理成虚拟DOM对象, 才会渲染显示到真实DOM页面上
-
-1. 内存中生成一样的虚拟DOM结构(==本质是个JS对象==)
-
-   因为真实的DOM属性好几百个, 没办法快速的知道哪个属性改变了
-
-   比如template里标签结构
-
-   ```vue
-   <template>
-       <div id="box">
-           <p class="my_p">123</p>
-       </div>
-   </template>
-   ```
-
-   对应的虚拟DOM结构
-
-   ```js
-   const dom = {
-       type: 'div',
-       attributes: [{id: 'box'}],
-       children: {
-           type: 'p',
-           attributes: [{class: 'my_p'}],
-           text: '123'
-       }
-   }
-   ```
-
-2. 以后vue数据更新
-
-   * 生成新的虚拟DOM结构
-   * 和旧的虚拟DOM结构对比
-   * 利用diff算法, 找不不同, 只更新变化的部分(重绘/回流)到页面 - 也叫打补丁
-
-==好处1: 提高了更新DOM的性能(不用把页面全删除重新渲染)==
-
-==好处2: 虚拟DOM只包含必要的属性(没有真实DOM上百个属性)==
-
-> 总结: 虚拟DOM保存在内存中, 只记录dom关键信息, 配合diff算法提高DOM更新的性能
-
-在内存中比较差异, 然后给真实DOM打补丁更新上
-
-![image-20210414215426783](images/image-20210414215426783.png)
-
-### 1.3_vue基础_diff算法
-
-vue用diff算法, 新虚拟dom, 和旧的虚拟dom比较
-
-#### 情况1: 根元素变了, 删除重建 
-
-旧虚拟DOM
-
-```vue
-<div id="box">
-    <p class="my_p">123</p>
-</div>
-```
-
-新虚拟DOM
-
-```vue
-<ul id="box">
-    <li class="my_p">123</li>
-</ul>
-```
-
-#### 情况2: 根元素没变, 属性改变, ==元素复用==, 更新属性
-
-旧虚拟DOM
-
-```vue
-<div id="box">
-    <p class="my_p">123</p>
-</div>
-```
-
-新虚拟DOM
-
-```vue
-<div id="myBox" title="标题">
-    <p class="my_p">123</p>
-</div>
-```
-
-### 1.4_vue基础_diff算法-key
-
-#### 情况3: 根元素没变, 子元素没变, 元素内容改变
-
-##### 无key - 就地更新
-
-v-for不会移动DOM, 而是尝试复用, 就地更新，如果需要v-for移动DOM, 你需要用特殊 attribute `key` 来提供一个排序提示
-
-```vue
-<ul id="myUL">
-    <li v-for="str in arr">
-        {{ str }} 
-        <input type="text">
-    </li>
-</ul>
-<button @click="addFn">下标为1的位置新增一个</button>
-```
-
-```js
-export default {
-    data(){
-        return {
-            arr: ["老大", "新来的", "老二", "老三"]
-        }
-    },
-    methods: {
-        addFn(){
-            this.arr.splice(1, 0, '新来的')
-        }
-    }
-};
-```
-
-![新_vfor更细_无key_就地更新](images/新_vfor更细_无key_就地更新.gif)
-
-旧 - 虚拟DOM结构  和  新 - 虚拟DOM结构 对比过程
-
-![image-20210414215502653](images/image-20210414215502653.png)
-
-==性能不高, 从第二个li往后都更新了==
-
-##### 有key - 值为索引 
-
- - 还是就地更新
-
-因为新旧虚拟DOM对比, key存在就复用此标签更新内容, 如果不存在就直接建立一个新的
-
-```vue
-<ul id="myUL">
-    <li v-for="(str, index) in arr" :key="index">
-        {{ str }} 
-        <input type="text">
-    </li>
-</ul>
-<button @click="addFn">下标为1的位置新增一个</button>
-```
-
-```js
-export default {
-    data(){
-        return {
-            arr: ["老大", "新来的", "老二", "老三"]
-        }
-    },
-    methods: {
-        addFn(){
-            this.arr.splice(1, 0, '新来的')
-        }
-    }
-};
-```
-
-
-
-key为索引-图解过程 (又就地往后更新了)
-
-![新_vfor更细_无key_就地更新](images/新_vfor更细_无key_就地更新.gif)
-
-![image-20210414215525492](images/image-20210414215525492.png)
-
-
-
-1. v-for先循环产生新的DOM结构, key是连续的, 和数据对应
-
-2. 然后比较新旧DOM结构, 找到区别, 打补丁到页面上
-
-   最后补一个li, 然后从第二个往后, 都要更新内容
-
-> 口诀: key的值有id用id, 没id用索引
-
-##### 有key - 值为id 
-
-key的值只能是唯一不重复的, 字符串或数值
-
-v-for不会移动DOM, 而是尝试复用, 就地更新，如果需要v-for移动DOM, 你需要用特殊 attribute `key` 来提供一个排序提示
-
-新DOM里数据的key存在, 去旧的虚拟DOM结构里找到key标记的标签, 复用标签
-
-新DOM里数据的key存在, 去旧的虚拟DOM结构里没有找到key标签的标签, 创建
-
-旧DOM结构的key, 在新的DOM结构里没有了, 则==移除key所在的标签==
-
-```vue
-<template>
-  <div>
-    <ul>
-      <li v-for="obj in arr" :key="obj.id">
-        {{ obj.name }}
-        <input type="text">
-      </li>
-    </ul>
-    <button @click="btn">下标1位置插入新来的</button>
-  </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      arr: [
-        {
-          name: '老大',
-          id: 50
-        },
-        {
-          name: '老二',
-          id: 31
-        },
-        {
-          name: '老三',
-          id: 10
-        }
-      ],
-    };
-  },
-  methods: {
-    btn(){
-      this.arr.splice(1, 0, {
-        id: 19, 
-        name: '新来的'
-      })
-    }
-  }
-};
-</script>
-
-<style>
-</style>
-```
-
-图解效果:
-
-![新_vfor更细_有key值为id_提高性能更新](images/新_vfor更细_有key值为id_提高性能更新.gif)
-
-![image-20210414215546869](images/image-20210414215546869.png)
-
-> 总结: 不用key也不影响功能(就地更新), 添加key可以提高更新的性能
-
-### 1.5_阶段小结
-
-v-for什么时候会更新页面呢?
-
-* 数组采用更新方法, 才导致v-for更新页面
-
-vue是如何提高更新性能的?
-
-* 采用虚拟DOM+diff算法提高更新性能
-
-虚拟DOM是什么?
-
-* 本质是保存dom关键信息的JS对象
-
-diff算法如何比较新旧虚拟DOM?
-
-* 根元素改变 – 删除当前DOM树重新建
-* 根元素未变, 属性改变 – 更新属性
-* 根元素未变, 子元素/内容改变
-* 无key – 就地更新 / 有key – 按key比较
-
-### 1.6_vue基础 动态class
+### 1.2_vue基础 动态class
 
 > 目标: 用v-bind给标签class设置动态的值
 
@@ -477,7 +198,7 @@ export default {
 
 > 总结: 就是把类名保存在vue变量中赋予给标签
 
-### 1.7_vue基础-动态style
+### 1.3_vue基础-动态style
 
 > 目标: 给标签动态设置style的值
 
@@ -511,7 +232,7 @@ export default {
 
 > 总结: 动态style的key都是css属性名
 
-### 1.8_案例-品牌管理(铺)
+### 1.4_案例-品牌管理(铺)
 
 > 目标: 数据铺设
 
@@ -667,7 +388,7 @@ export default {
 </script>
 ```
 
-### 1.9_案例-品牌管理(增)
+### 1.5_案例-品牌管理(增)
 
 > 目标: 数据新增
 
@@ -690,65 +411,72 @@ export default {
 
 在上个案例代码基础上接着写
 
-==正确代码,不可复制==
+1. 添加按钮注册点击事件
 
-```vue
-<!-- 添加资产 -->
-      <form class="form-inline">
-        <div class="form-group">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="资产名称"
-              v-model="name"
-            />
-          </div>
-        </div>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <div class="form-group">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="价格"
-              v-model.number="price"
-            />
-          </div>
-        </div>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <!-- 4. 阻止表单提交(刷新网页数据又回去了) -->
-        <button class="btn btn-primary" @click.prevent="addFn">添加资产</button>
-      </form>
+   ```vue
+   <button class="btn btn-primary" @click.prevent="addFn">添加资产</button>
+   ```
 
-<script>
-// 目标: 新增
-// 1. 按钮 - 事件
-// 2. 给表单v-model绑定vue变量
-export default {
-  // ...省略其他
-  methods: {
-    addFn(){
-      // 5. 判断是否为空
-      if (this.name.trim().length === 0 || this.price === 0) {
-        alert("不能为空")
-        return
-      }
-      // 3. 把值以对象形式-插入list
-      this.list.push({
-        // 当前数组最后一个对象的id+1作为新对象id值
-        id: this.list[this.list.length - 1].id + 1,
-        name: this.name,
-        price: this.price,
-        time: new Date()
-      })
-    }
-  }
-};
-</script>
-```
+   ```js
+   methods: {
+     addFn() {
+       console.log('收集数据')
+     }
+   }
+   ```
 
-### 1.10_案例-品牌管理(删)
+2. 通过v-model收集数据
+
+   ```vue
+   <input
+          type="text"
+          class="form-control"
+          placeholder="资产名称"
+          v-model="name"
+          />
+   <input
+          type="text"
+          class="form-control"
+          placeholder="价格"
+          v-model.number="price"
+          />
+   ```
+
+   ```js
+   data () {
+     return {
+       name: '',
+       price: ''
+     }
+   }
+   ```
+
+3. 完成添加操作
+
+   ```js
+   export default {
+     // ...省略其他
+     methods: {
+       addFn(){
+         // 5. 判断是否为空
+         if (this.name.trim().length === 0 || this.price === 0) {
+           alert("不能为空")
+           return
+         }
+         // 3. 把值以对象形式-插入list
+         this.list.push({
+           // 当前数组最后一个对象的id+1作为新对象id值
+           id: this.list[this.list.length - 1].id + 1,
+           name: this.name,
+           price: this.price,
+           time: new Date()
+         })
+       }
+     }
+   };
+   ```
+
+### 1.6_案例-品牌管理(删)
 
 > 目标: 数据删除
 
@@ -773,34 +501,24 @@ export default {
 
 在上个案例代码基础上接着写
 
-正确的代码(==不可复制==)
+1. 删除按钮注册点击事件
 
-```vue
+   ```vue
+   <td><a href="#" @click="delFn(obj.id)">删除</a></td>
+   ```
 
-<td><a href="#" @click="delFn(obj.id)">删除</a></td>
-          
-<script>
-// 目标: 删除功能
-// 1. 删除a标签-点击事件
-// 2. 对应方法名
-// 3. 数据id到事件方法中
-// 4. 通过id, 找到这条数据在数组中的下标
-// 5. splice方法删除原数组里的对应元素
-// 6. 设置tfoot, 无数据给出提示
-// 7. 无数据再新增, id要判断一下
-export default {
-  // ...其他代码
-  methods: {
-    // ...其他代码
-    delFn(id){
-      // 通过id找到这条数据在数组中下标
-      let index = this.list.findIndex(obj => obj.id === id)
-      this.list.splice(index, 1)
-    }
-  }
-};
-</script>
-```
+2. 定义事件函数实现删除
+
+   ```js
+   methods: {
+       // ...其他代码
+       delFn(id){
+         // 通过id找到这条数据在数组中下标
+         let index = this.list.findIndex(obj => obj.id === id)
+         this.list.splice(index, 1)
+       }
+     }
+   ```
 
 ## 2. vue过滤器
 
