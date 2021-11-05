@@ -1,19 +1,9 @@
 <template>
   <div>
-    姓名：{{ person.name }}
-    年龄：{{ person.age }}
-    <ul>
-      <li v-for="(val, index) in arr" :key="index">
-        {{ val }}
-      </li>
-    </ul>
-    <ul>
-      <li v-for="(val, index) in arr2" :key="index">
-        {{ val.name }}
-      </li>
-    </ul>
-    <button @click="onClick">点击</button>
-    <button @click="onClick2">修改数组</button>
+    购物车商品总价：
+    <!-- 商品是否大于500 符合条件可使用400的优惠券 否则不可使用 -->
+    {{ totalPrice }}
+    {{ totalPrice }}
   </div>
 </template>
 
@@ -21,32 +11,21 @@
 export default {
   data () {
     return {
-      person: {
-        name: '张三'
-      },
-      arr: [5, 3, 9, 2, 1],
-      arr2: [
-        { name: '张三' },
-        { name: '张三1' },
-        { name: '张三2' }
-      ]
+      total: 5,
+      price: 98,
+      coupon: 400
+    }
+  },
+
+  computed: {
+    totalPrice () {
+      console.log('计算')
+      return this.total * this.price >= 500 ? this.total * this.price - this.coupon : this.total * this.price
     }
   },
 
   created () {
 
-  },
-
-  methods: {
-    onClick () {
-      // this.person.age = 19
-      this.$set(this.person, 'age', 19)
-    },
-    onClick2 () {
-      // this.arr[2] = 10
-      // this.$set(this.arr, 2, 10)
-      this.arr2[2].name = '张三4'
-    }
   }
 }
 </script>

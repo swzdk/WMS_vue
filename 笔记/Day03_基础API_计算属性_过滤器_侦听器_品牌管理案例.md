@@ -526,12 +526,12 @@ export default {
 
 > 目的: 转换格式, 过滤器就是一个**函数**, 传入值返回处理后的值
 
-过滤器只能用在, ==插值表达式和v-bind表达式==
+使用方式：过滤器只能用在插值表达式{{}}和v-bind表达式中通过 ｜ 方式使用
 
 Vue中的过滤器场景
 
 * 字母转大写, 输入"hello", 输出"HELLO"
-* 字符串翻转, "输入hello, world", 输出"dlrow ,olleh"
+* 时间格式化，后端返回的 "1636101994776" ,展示 "2021-11-05"
 
 语法: 
 
@@ -541,99 +541,83 @@ Vue中的过滤器场景
 
 例子:
 
-* 全局定义字母都大写的过滤器
-* 局部定义字符串翻转的过滤器
+局部过滤器
 
 ```vue
 <template>
   <div>
-    <p>原来的样子: {{ msg }}</p>
-    <!-- 2. 过滤器使用
-      语法: {{ 值 | 过滤器名字 }}
-     -->
-    <p>使用翻转过滤器: {{ msg | reverse }}</p>
-    <p :title="msg | toUp">鼠标长停</p>
+    名字：{{ name | strUpperCase}}
   </div>
 </template>
 
 <script>
 export default {
-  data(){
+  data () {
     return {
-      msg: 'Hello, Vue'
+      name: 'tom'
     }
   },
-  // 方式2: 局部 - 过滤器
-  // 只能在当前vue文件内使用
-  /*
-     语法: 
-     filters: {
-       过滤器名字 (val) {
-         return 处理后的值
-       }
-     }
-  */
+
   filters: {
-    toUp (val) {
-      return val.toUpperCase()
+    strUpperCase: function(val) {
+      return val.toLocaleUpperCase()
     }
   }
 }
 </script>
 
-<style>
-
-</style>
 ```
 
-> 总结: 把值转成另一种形式, 使用过滤器, Vue3用函数替代了过滤器.
->
-> 全局注册最好在main.js中注册, 一处注册到处使用
+全局过滤器
+
+```js
+Vue.filter('strUpperCase', (val) => {
+  return val.toLocaleUpperCase()
+})
+```
+
+
 
 ### 2.1_vue过滤器-传参和多过滤器
 
-> 目标: 可同时使用多个过滤器, 或者给过滤器传参
+> 目标: 过滤器可以传递参数,可同时使用多个过滤器
 
-* 语法:
-  * 过滤器传参:   vue变量 | 过滤器(实参) 
-  * 多个过滤器:   vue变量 | 过滤器1 | 过滤器2
+过滤器传参：
+
+```js
+Vue.filter('strUpperCase', (val, division) => {
+  return val.toLocaleUpperCase().split('').join(division)
+})
+```
 
 ```vue
 <template>
   <div>
-    <p>原来的样子: {{ msg }}</p>
-    <!-- 1.
-      给过滤器传值
-      语法: vue变量 | 过滤器名(值)
-     -->
-    <p>使用翻转过滤器: {{ msg | reverse('|') }}</p>
-    <!-- 2.
-      多个过滤利使用
-      语法: vue变量 | 过滤器1 | 过滤器2
-     -->
-    <p :title="msg | toUp | reverse('|')">鼠标长停</p>
+    名字：{{ name | strUpperCase('-')}}
+    时间：{{ date }}
   </div>
 </template>
-
-<script>
-export default {
-  data(){
-    return {
-      msg: 'Hello, Vue'
-    }
-  },
-  filters: {
-    toUp (val) {
-      return val.toUpperCase()
-    }
-  }
-}
-</script>
-
-<style>
-
-</style>
 ```
+
+多过滤器使用：
+
+```js
+// 定义专为小写过滤器：
+Vue.filter('strLocaleLowerCase', (val) => {
+  return val.toLocaleLowerCase()
+})
+```
+
+```vue
+<template>
+  <div>
+    名字：{{ name | strUpperCase('-') | strLocaleLowerCase}}
+    时间：{{ date }}
+  </div>
+</template>
+```
+
+
 
 > 总结: 过滤器可以传参, 还可以对某个过滤器结果, 后面在使用一个过滤器
 
@@ -649,10 +633,8 @@ export default {
 
    moment官网文档: http://momentjs.cn/docs/#/displaying/
 
-   ```bash
-   yarn add moment
-   ```
-
+   
+   
 2. 定义过滤器, 把时间用moment模块格式化, 返回我们想要的格式
 
    ```js
@@ -674,119 +656,122 @@ export default {
 
 ## 3. vue计算属性
 
-### 3.0_vue计算属性-computed
+### 3.0_多个数据计算的问题
 
-> 目标: 一个数据, 依赖另外一些数据计算而来的结果
++ 为什么需要计算属性？
 
-语法:
+  使用场景,某个属性的值依赖多个属性的简单计算或者复杂逻辑计算得出的值时, 如何解决？
 
-* ```js
-  computed: {
-      "计算属性名" () {
-          return "值"
++ 计算商品总价：商品是否大于500 符合条件可使用400的优惠券 否则不可使用
+
+  ```vue
+  <template>
+    <div>
+      购物车商品总价：
+      <!-- 商品是否大于500 符合条件可使用400的优惠券 否则不可使用 -->
+      {{ total * price >= 500 ? total * price - coupon : total * price }}
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    data () {
+      return {
+        total: 5,
+        price: 98,
+        coupon: 400
       }
+    }
   }
+  </script>
+  
   ```
 
-需求: 
++ 封装成方法
 
-* 需求: 求2个数的和显示到页面上
-
-```vue
-<template>
-  <div>
-    <p>{{ num }}</p>
-  </div>
-</template>
-
-<script>
-export default {
-  data(){
-    return {
-      a: 10,
-      b: 20
-    }
-  },
-  // 计算属性:
-  // 场景: 一个变量的值, 需要用另外变量计算而得来
-  /*
-    语法:
-    computed: {
-      计算属性名 () {
-        return 值
+  ```vue
+  <template>
+    <div>
+      购物车商品总价：
+      <!-- 商品是否大于500 符合条件可使用400的优惠券 否则不可使用 -->
+      {{ totalPrice() }}
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    data () {
+      return {
+        total: 5,
+        price: 98,
+        coupon: 400
+      }
+    },
+  
+    methods: {
+      totalPrice () {
+        return this.total * this.price >= 500 ? this.total * this.price - this.coupon : this.total * this.price
       }
     }
-  */
- // 注意: 计算属性和data属性都是变量-不能重名
- // 注意2: 函数内变量变化, 会自动重新计算结果返回
-  computed: {
-    num(){
-      return this.a + this.b
-    }
   }
-}
-</script>
+  </script>
+  
+  ```
 
-<style>
+  问题：使用多次方法回多次调用
 
-</style>
-```
+  ```vue
+  <template>
+    <div>
+      购物车商品总价：
+      <!-- 商品是否大于500 符合条件可使用400的优惠券 否则不可使用 -->
+      {{ totalPrice() }}
+      {{ totalPrice() }}
+    </div>
+  </template>
+  ```
 
-> 注意: 计算属性也是vue数据变量, 所以不要和data里重名, 用法和data相同
+### 3.1_vue计算属性-computed
 
-> 总结: 一个数据, 依赖另外一些数据计算而来的结果
-
-### 3.1_vue计算属性-缓存
-
-> 目标: 计算属性是基于它们的依赖项的值结果进行缓存的，只要依赖的变量不变, 都直接从缓存取结果
-
-![image-20210113232439893](images/image-20210113232439893.png)
+使用方式：
 
 ```vue
 <template>
   <div>
-    <p>{{ reverseMessage }}</p>
-    <p>{{ reverseMessage }}</p>
-    <p>{{ reverseMessage }}</p>
-    <p>{{ getMessage() }}</p>
-    <p>{{ getMessage() }}</p>
-    <p>{{ getMessage() }}</p>
+    购物车商品总价：
+    <!-- 商品是否大于500 符合条件可使用400的优惠券 否则不可使用 -->
+    {{ totalPrice }}
+    {{ totalPrice }}
   </div>
 </template>
 
 <script>
 export default {
-  data(){
+  data () {
     return {
-      msg: "Hello, Vue"
+      total: 5,
+      price: 98,
+      coupon: 400
     }
   },
-  // 计算属性优势:
-  // 带缓存
-  // 计算属性对应函数执行后, 会把return值缓存起来
-  // 依赖项不变, 多次调用都是从缓存取值
-  // 依赖项值-变化, 函数会"自动"重新执行-并缓存新的值
+
   computed: {
-    reverseMessage(){
-      console.log("计算属性执行了");
-      return this.msg.split("").reverse().join("")
-    }
-  },
-  methods: {
-    getMessage(){
-      console.log("函数执行了");
-      return this.msg.split("").reverse().join("")
+    totalPrice () {
+      console.log('计算')
+      return this.total * this.price >= 500 ? this.total * this.price - this.coupon : this.total * this.price
     }
   }
 }
 </script>
 
-<style>
-
-</style>
 ```
 
-> 总结: 计算属性根据依赖变量结果缓存, 依赖变化重新计算结果存入缓存, 比普通方法性能更高
+注意: 计算属性也是vue数据变量, 所以不要和data里重名, 用法和data相同
+
+总结：
+
++ 当依赖某个数据或多个数据进行逻辑的计算的时候可以使用计算属性
++ 计算属性具有缓存的特性，当多次使用同一个计算属性，只会计算一次，后续的结果直接从第一次的计算中得到，, 比普通方法性能更高（也是上述场景使用methods计算的区别）
 
 ### 3.2_案例-品牌管理(总价和均价)
 
