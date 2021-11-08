@@ -487,36 +487,6 @@ export default {
 
 ```
 
-
-
-components/MyProduct.vue - 准备标签
-
-```vue
-<template>
-  <div class="my-product">
-    <h3>标题: {{ title }}</h3>
-    <p>价格: {{ price }}元</p>
-    <p>{{ intro }}</p>
-  </div>
-</template>
-
-<script>
-export default {
-  props: ['title', 'price', 'intro']
-}
-</script>
-
-<style>
-.my-product {
-  width: 400px;
-  padding: 20px;
-  border: 2px solid #000;
-  border-radius: 5px;
-  margin: 10px;
-}
-</style>
-```
-
 App.vue中使用并传入数据
 
 ```vue
@@ -555,6 +525,36 @@ export default {
 
 <style>
 
+</style>
+```
+
+
+
+components/MyProduct.vue - 准备标签
+
+```vue
+<template>
+  <div class="my-product">
+    <h3>标题: {{ title }}</h3>
+    <p>价格: {{ price }}元</p>
+    <p>{{ intro }}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ['title', 'price', 'intro']
+}
+</script>
+
+<style>
+.my-product {
+  width: 400px;
+  padding: 20px;
+  border: 2px solid #000;
+  border-radius: 5px;
+  margin: 10px;
+}
 </style>
 ```
 
