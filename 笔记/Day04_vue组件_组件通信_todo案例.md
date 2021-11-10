@@ -778,17 +778,27 @@ export default {
 
 组件是什么?
 
-* 是一个vue实例, 封装标签, 样式和JS代码
+* 是一个vue实例, 封装标签, 样式和JS代码(视图)
 
 组件好处?
 
-* 便于复用, 易于扩展
+* 便于复用, 易于扩展, 维护
 
 组件通信哪几种, 具体如何实现?
 
 * 父 -> 子
 
-* 父 <- 子
+  父组件怎么传: 通过自定义属性传
+
+  子组件怎么收: 通过props接收
+
+* 子->父
+
+  子组件: this.$emit(): 可以触发当前组件标签上的一个自定义事件, 还可以传值 ,就是事件对象
+
+  父组件: 在对应的组件标签上 注册对应的自定义事件,接收数据, 只要接收到事件对象 就接收到数据了
+
+  
 
 ### 2.5_vue组件通信-EventBus
 
@@ -1658,61 +1668,6 @@ export default {
 
 > 总结: 重复部分封装成组件, 然后注册使用
 
-## 附加练习_2.点击文字变色
-
-> 目标: 修改Dog组件, 实现组件内点击变色
-
-提示: 文字在组件内, 所以事件和方法都该在组件内-独立
-
-图示:
-
-![10.3.1_组件_事件变量使用](images/10.3.1_组件_事件变量使用.gif)
-
-正确代码(==先不要看==)
-
-components/practise/Dog2.vue
-
-```html
-<template>
-  <div class="my_div">
-    <img
-      src="https://scpic.chinaz.net/files/pic/pic9/202003/zzpic23514.jpg"
-      alt=""
-    />
-    <p :style="{backgroundColor: colorStr}" @click="btn">这是一个孤独可怜的狗</p>
-  </div>
-</template>
-
-<script>
-export default {
-  data(){
-    return {
-      colorStr: ""
-    }
-  },
-  methods: {
-    btn(){
-      this.colorStr = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`
-    }
-  }
-};
-</script>
-
-<style>
-.my_div {
-  width: 200px;
-  border: 1px solid black;
-  text-align: center;
-  float: left;
-}
-
-.my_div img {
-  width: 100%;
-  height: 200px;
-}
-</style>
-```
-
 ## 附加练习_3.卖狗啦
 
 > 目标: 把数据循环用组件显示铺设
@@ -1998,283 +1953,6 @@ export default {
 </style>
 ```
 
-## 附加练习_5.卖完了
-
-> 目标: 完成图示的卖完了效果
-
-需求: 
-
-* 如果为0了后面显示卖光了!!!
-* 如果库存有值, 后面就不显示卖光了!!!
-* 如果库存有值, 累计商品总数量
-
-要求: 一行是一个组件进行复用, 这里要求必须用table>tr (也就是封装tr组件)
-
-组件使用注意: html正常解析, table>tr或者select>option, 虽然vue渲染页面可以自定义, 但是还需要遵循浏览器的标签关系
-
-* table>tr中不能直接使用组件, 需要在tr的is属性指定组件名
-* select>option 也不能封装options组件, 需要在option的is属性指定组件名
-
-效果演示:
-
-![11.7_课上练习](images/11.7_课上练习.gif)
-
-vue实例data里的数组如下
-
-```js
-goodsArr: [
-    {
-        count: 0,
-        goodsName: "Watermelon"
-    }, {
-        count: 0,
-        goodsName: "Banana"
-    }, {
-        count: 0,
-        goodsName: "Orange"
-    }, {
-        count: 0,
-        goodsName: "Pineapple"
-    }, {
-        count: 0,
-        goodsName: "Strawberry"
-    }
-]
-```
-
-正确代码(不可复制)
-
-components/practise/MyTr.vue
-
-```html
-<template>
-  <tr>
-    <td>
-      <input type="number" v-model.number="obj['count']"/>
-    </td>
-    <td>
-      <span>{{ obj["goodsName"] }}</span>
-    </td>
-    <td>
-      <span v-show="obj['count'] == 0">卖光了!!!</span>
-    </td>
-  </tr>
-</template>
-
-<script>
-export default {
-    // 传入对象有风险, 但是如果是一对一关系可以传入对象-直接修改对象里的值影响外部效果
-    props: ["obj"]
-};
-</script>
-
-<style>
-</style>
-```
-
-App.vue使用
-
-```vue
-<template>
-  <div>
-    <table>
-      <!-- 2. 使用tr组件, 传入需要的数据 -->
-      <tr
-        is="myTr"
-        v-for="(item, index) in goodsArr"
-        :key="index"
-        :obj="item"
-        :index="index"
-      ></tr>
-    </table>
-    <p>All Number:{{ sumNumber }}</p>
-  </div>
-</template>
-
-<script>
-import MyTr from '@/components/practise/MyTr'
-export default {
-  data() {
-    return {
-      goodsArr: [
-        {
-          count: 0,
-          goodsName: "Watermelon",
-        },
-        {
-          count: 0,
-          goodsName: "Banana",
-        },
-        {
-          count: 0,
-          goodsName: "Orange",
-        },
-        {
-          count: 0,
-          goodsName: "Pineapple",
-        },
-        {
-          count: 0,
-          goodsName: "Strawberry",
-        },
-      ],
-    };
-  },
-  components: {
-    MyTr
-  },
-  computed: {
-    sumNumber(){
-      return this.goodsArr.reduce((sum, obj) => sum += obj.count * 1, 0)
-    }
-  }
-};
-</script>
-
-<style>
-</style>
-```
-
-## 附加练习_6.买点好吃的
-
-> 目标: 商品列表显示一下, 然后封装组件实现增加减少功能并在最后统计总价
-
-要求: 商品名, 增加 数量, 减少这一条封装成组件使用
-
-效果演示:
-
-![11.6_课上练习](images/11.6_课上练习.gif)
-
-数据:
-
-```js
-[
-    {
-        "shopName": "可比克薯片",
-        "price": 5.5,
-        "count": 0
-    },
-    {
-        "shopName": "草莓酱",
-        "price": 3.5,
-        "count": 0
-    },
-    {
-        "shopName": "红烧肉",
-        "price": 55,
-        "count": 0
-    },
-    {
-        "shopName": "方便面",
-        "price": 12,
-        "count": 0
-    }
-]
-```
-
-正确代码(==不可复制==)
-
-components/practise/Food.vue
-
-```html
-<template>
-  <div>
-    <span>{{ goodsname }}</span>
-    <button @click="add(ind)">+</button>
-    <span> {{ count }} </span>
-    <button @click="sec(ind)">-</button>
-  </div>
-</template>
-
-<script>
-export default {
-    props: ['goodsname', 'ind', 'count'], // 商品名,索引,数量
-    methods: {
-        add(ind){
-            this.$emit('addE', ind)
-        },
-        sec(ind){
-            this.$emit("secE", ind)
-        }
-    }
-};
-</script>
-```
-
-App.vue
-
-```vue
-<template>
-  <div>
-    <p>商品清单如下:</p>
-    <div v-for="(obj, index) in shopData" :key="index">
-      {{ obj.shopName }} -- {{ obj.price }}元/份
-    </div>
-    <p>请选择购买数量:</p>
-    <Food
-      v-for="(obj, index) in shopData"
-      :key="index + ' '"
-      :goodsname="obj.shopName"
-      :ind="index"
-      :count="obj.count"
-      @addE="addFn"
-      @secE="secFn"
-    >
-    </Food>
-    <p>总价为: {{ allPrice }}</p>
-  </div>
-</template>
-
-<script>
-import Food from "@/components/practise/Food";
-export default {
-  data() {
-    return {
-      // 商品数据
-      shopData: [
-        {
-          shopName: "可比克薯片",
-          price: 5.5,
-          count: 0,
-        },
-        {
-          shopName: "草莓酱",
-          price: 3.5,
-          count: 0,
-        },
-        {
-          shopName: "红烧肉",
-          price: 55,
-          count: 0,
-        },
-        {
-          shopName: "方便面",
-          price: 12,
-          count: 0,
-        },
-      ],
-    };
-  },
-  components: {
-    Food,
-  },
-  methods: {
-    addFn(ind){
-      this.shopData[ind].count++
-    },
-    secFn(ind){
-      this.shopData[ind].count > 0 && this.shopData[ind].count--
-    }
-  },
-  computed: {
-    allPrice(){
-      return this.shopData.reduce((sum, obj) => sum += obj.count * obj.price, 0)
-    }
-  }
-};
-</script>
-```
-
 ## 今日作业
 
 ==课上练习和案例主要==
@@ -2282,6 +1960,8 @@ export default {
 ### 购物车
 
 目的: 把一行tr封装成一个组件, 然后v-for循环复用传值
+
+将合计行单独封装成组件
 
 > 提示: 对象类型传入到子组件, 内部修改也会相应外部这个对象 (对象是引用关系哦)
 
@@ -2366,113 +2046,16 @@ export default {
 </style>
 ```
 
-### 做数学题
+封装按钮组件
 
-目的: 随机产生数学题, 输入答案提交后, 在下面对应序号显示结果
 
-> 数字输入框按钮是一个组件, 下面每个序号和提示是一个组件
 
-图示:
-
-![Day04_作业_数学题](images/Day04_作业_数学题.gif)
-
-Subject.vue - 题目一行组件 (样式和标签)(==可以复制接着写==)
+![image-20211110194943305](images\image-20211110194943305.png)
 
 ```vue
-<template>
-  <div class="subject">
-    <span></span>
-    <span>+</span>
-    <span></span>
-    <span>=</span>
-    <input type="number" />
-    <button>提交</button>
-  </div>
-</template>
-
-<script>
-export default {
-
-};
-</script>
-
-<style scoped>
-.subject {
-  margin: 5px;
-  padding: 5px;
-  font-size: 20px;
-}
-.subject span {
-  display: inline-block;
-  text-align: center;
-  width: 20px;
-}
-.subject input {
-  width: 50px;
-  height: 20px;
-}
-</style>
+<el-button @click="" title="默认按钮"></el-button>
+<el-button title="默认按钮" type="primary"></el-button>
+<el-button title="默认按钮" type="success"></el-button>
 ```
 
-Flag.vue - 下面结果一条的组件 (复制标签和样式)(==可以复制==)
-
-```vue
-<template>
-  <span >1: 未完成</span>
-</template>
-
-<script>
-export default {
-
-};
-</script>
-
-<style scoped>
-.right {
-  color: green;
-}
-.error {
-  color: red;
-}
-.undo {
-  color: #ccc;
-}
-</style>
-```
-
-App.vue - 复制标签和样式
-
-无vue代码的标签(==可以复制==)
-
-```html
-<template>
-  <div id="app">
-    <h2>测试题</h2>
-    <subject ></subject>
-    <div>
-      <flag></flag>
-    </div>
-  </div>
-</template>
-
-<script>
-
-export default {
-  
-};
-</script>
-
-<style>
-body {
-  background-color: #eee;
-}
-
-#app {
-  background-color: #fff;
-  width: 500px;
-  margin: 50px auto;
-  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-  padding: 2em;
-}
-</style>
-```
+按钮可以注册点击事件
