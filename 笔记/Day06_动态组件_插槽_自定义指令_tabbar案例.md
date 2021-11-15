@@ -1669,63 +1669,31 @@ enterFn(obj){ // 回车
 
 
 
-## 附加练习_1.注册组件复用
+![image-20211115190355962](\images\image-20211115190355962.png)
 
-目的: 封装一个复用的组件, 可以动态的插入标签, 来作为注册页的一块项
 
-图示:
 
-![image-20210115194708455](images/image-20210115194708455.png)
++ 封装一个table组件
 
-正确代码:
+  table表格
 
-```html
-<div id="app">
-    <child-com :title="'姓名'">
-        <input type='text'/>
-    </child-com>
-    <child-com :title="'密码'">
-        <input type='password' />
-    </child-com>
-    <child-com :title="'性别'">
-        <input type='radio' name="sex" value="男"/>男
-        <input type='radio' name="sex" value="女"/>女
-    </child-com>
-    <child-com :title="'爱好'">
-        <input type='checkbox' value="抽烟" />抽烟
-        <input type='checkbox' value="喝酒" />喝酒
-        <input type='checkbox' value="烫头" />烫头
-    </child-com>
-    <child-com :title="'来自于'">
-        <select>
-            <option value="北京">北京</option>
-            <option value="天津">天津</option>
-            <option value="南京">南京</option>
-        </select>
-    </child-com>
++ 将数据传给表格组件
 
-</div>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script>
-    new Vue({
-        el: "#app",
-        components: {
-            childCom: { // 组件名字
-                props: {
-                    title: {
-                        type: String
-                    }
-                },
-                template: `<div style="border: 1px solid black;">
-<p>{{title}}</p>
-<slot></slot>
-    </div>`
-            }
-        }
-    })
-</script>
-```
+  ```js
+  list: [
+      { id: 100, name: '外套', price: 199, time: new Date('2010-08-12') },
+      { id: 101, name: '裤子', price: 34, time: new Date('2013-09-01') },
+      { id: 102, name: '鞋', price: 25.4, time: new Date('2018-11-22') },
+      { id: 103, name: '头发', price: 19900, time: new Date('2020-12-12') }
+  ]
+  ```
 
-## 今日作业
++ 表格所有地方都支持自定义
 
-把课上的tabbar再来一遍
+  + 表格大标题
+  + 索引列
+  + 资产名称
+  + 价格
+  + 创建时间
+  + 操作
+
