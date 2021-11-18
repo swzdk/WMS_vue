@@ -34,7 +34,7 @@
 
 具体使用示例: 网易云音乐 https://music.163.com/
 
-单页面应用(SPA): 所有功能在一个html页面上实现
+单页面应用(SPA): 所有功能在一个html页面上实现 single page appliaction
 
 前端路由作用: 实现业务场景切换
 
@@ -59,8 +59,6 @@
 vue-router模块包
 
 它和 Vue.js 深度集成
-
-可以定义 - 视图表(映射规则)
 
 模块化的
 
