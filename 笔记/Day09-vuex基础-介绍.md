@@ -323,3 +323,95 @@ computed: {
  <div>{{ filterList }}</div>
 ```
 
+## 作业
+
+### 购物车
+
+目的: 数据定义在vuex中
+
+```js
+goodList: [
+        {
+          name: "诸葛亮",
+          price: 1000,
+          num: 1,
+          checked: false,
+        },
+        {
+          name: "蔡文姬",
+          price: 1500,
+          num: 1,
+          checked: false,
+        },
+        {
+          name: "妲己",
+          price: 2000,
+          num: 1,
+          checked: false,
+        },
+        {
+          name: "鲁班",
+          price: 2200,
+          num: 1,
+          checked: false,
+        },
+      ],
+```
+
+**添加需求**: 输入框(商品名称  商品价格  商品数量) 添加按钮
+
+![image-20210115195904519](F:/课程/itcast/vue/vue-base/笔记/images/image-20210115195904519.png)
+
+不带vue代码的标签结构(==可以复制==)接着写
+
+```vue
+<template>
+  <div>
+    <table
+      border="1"
+      width="700"
+      style="border-collapse: collapse"
+    >
+      <caption>
+        购物车
+      </caption>
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" /> <span>全选</span>
+          </th>
+          <th>名称</th>
+          <th>价格</th>
+          <th>数量</th>
+          <th>总价</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>合计:</td>
+          <td colspan="5">
+            
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+    };
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
