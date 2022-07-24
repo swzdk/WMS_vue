@@ -100,9 +100,10 @@ export default {
 
 <style scoped lang="less">
 .main {
-  width: 100%;
-  height: 100%;
+  position: relative;
   display: flex;
+  width: 100%;
+  height: 960px;
   justify-content: center;
   align-items: center;
   .content {
@@ -111,6 +112,7 @@ export default {
     border-radius: 34px;
     box-shadow: 0 0 9px rgb(93 93 93 / 33%);
     display: flex;
+    z-index: 0;
     .left {
       width: 398px;
       height: 516px;

@@ -1,0 +1,71 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3541681 */
+  src: url('iconfont.woff2?t=1658669403643') format('woff2'),
+       url('iconfont.woff?t=1658669403643') format('woff'),
+       url('iconfont.ttf?t=1658669403643') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.iconhr-jianhuo:before {
+  content: "\e63a";
+}
+
+.iconhr-shouhuo:before {
+  content: "\e640";
+}
+
+.iconhr-pandiandan:before {
+  content: "\e88b";
+}
+
+.iconhr-jiaojie:before {
+  content: "\e662";
+}
+
+.iconhr-pandian:before {
+  content: "\e649";
+}
+
+.iconhr-shangjia:before {
+  content: "\e67a";
+}
+
+.iconhr-chukudan:before {
+  content: "\e620";
+}
+
+.iconhr-rukudan:before {
+  content: "\e623";
+}
+
+.iconhr-shangwu:before {
+  content: "\eb49";
+}
+
+.iconhr-gongzuotai:before {
+  content: "\e641";
+}
+
+.iconhr-kucun:before {
+  content: "\e6c2";
+}
+
+.iconhr-ruku:before {
+  content: "\e644";
+}
+
+.iconhr-chuku:before {
+  content: "\e645";
+}
+
+.iconhr-xinxiguanli:before {
+  content: "\e630";
+}
+

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" style="overflow-x:hidden">
     <router-view></router-view>
   </div>
 </template>
@@ -9,13 +9,12 @@ export default {}
 </script>
 
 <style>
-body,
-html {
-  width: 100%;
-  height: 100%;
-}
 #app {
   width: 100%;
   height: 100%;
+}
+body,
+html {
+  margin: 0;
 }
 </style>
