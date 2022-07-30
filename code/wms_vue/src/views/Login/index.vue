@@ -87,7 +87,9 @@ export default {
         // 正确时传入表单
         this.$store.commit('user/setLoginInfo', this.login)
         this.$router.push('/dashboard')
-      } catch (e) {}
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
   watch: {

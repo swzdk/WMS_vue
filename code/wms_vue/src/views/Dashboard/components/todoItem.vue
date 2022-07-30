@@ -4,12 +4,12 @@
       <div class="icon" :style="`background-color:${color}`">
         <hrIcon :icon="iconName" style="color:white" />
       </div>
-      <div class="title">{{this.title}}</div>
+      <div class="title">{{todo?.name}}</div>
       <div class="bottom">
         <span class="label">新增</span>
-        <span class="value">3</span>
+        <span class="value">{{todo?.value1}}</span>
         <span class="label">待审核</span>
-        <span class="value" :style="`color:${color}`">3</span>
+        <span class="value" :style="`color:${color}`">{{todo?.value2}}</span>
       </div>
     </a>
   </div>
@@ -27,10 +27,7 @@ export default {
       type: String,
       required: true
     },
-    title: {
-      type: String,
-      required: true
-    }
+    todo: {}
   },
   components: {
     HrIcon

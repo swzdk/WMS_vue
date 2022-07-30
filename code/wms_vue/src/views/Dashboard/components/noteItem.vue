@@ -1,13 +1,20 @@
 <template>
   <div>
     <div class="hr"></div>
-    <div class="title">紧急盘点通知</div>
-    <div class="time">2020.12.30 18:23:14</div>
+    <div class="title">{{note.title}}</div>
+    <div class="time">{{note.time}}</div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  props: {
+    note: {
+      type: Object,
+      required: true
+    }
+  }
+}
 </script>
 
 <style scoped lang="less">

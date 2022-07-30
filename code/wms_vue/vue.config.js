@@ -4,12 +4,16 @@ module.exports = defineConfig({
   configureWebpack: {
     devServer: {
       open: true,
-      port: 8888,
+      port: 8080,
       host: '127.0.0.1',
       // 跨域重定向
       proxy: {
         '/api': {
-          target: 'https://v.itheima.net',
+          target: 'http://www-wms-java.itheima.net/',
+          changeOrigin: true
+        },
+        '/ips': {
+          target: 'http://www-wms-java.itheima.net/',
           changeOrigin: true
         }
       }

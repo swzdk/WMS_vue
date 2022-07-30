@@ -7,7 +7,7 @@ export default {
   name: 'HrIcon',
   props: {
     icon: {
-      type: String,
+      // type: String,
       required: true
     }
   }

@@ -20,20 +20,16 @@
           <div class="todoData">
             <div class="public-title">待办信息</div>
             <div class="todoList">
-              <todoItem color="#0076ff" iconName="rukudan" title="入库单" />
-              <todoItem color="#ffb200" iconName="chukudan" title="出库单" />
-              <todoItem color="#ff7100" iconName="pandiandan" title="盘点单" />
+              <todoItem color="#0076ff" iconName="rukudan" :todo="todoList[0]" />
+              <todoItem color="#ffb200" iconName="chukudan" :todo="todoList[1]" />
+              <todoItem color="#ff7100" iconName="pandiandan" :todo="todoList[2]" />
             </div>
           </div>
         </div>
         <div class="divRight">
           <div class="notes">
             <div class="public-title">通知/公告</div>
-            <noteItem class="note" />
-            <noteItem class="note" />
-            <noteItem class="note" />
-            <noteItem class="note" />
-            <noteItem class="note" />
+            <noteItem class="note" v-for="(item,index) in notices" :key="index" :note="item" />
           </div>
         </div>
       </div>
@@ -49,16 +45,25 @@
       </div>
       <div class="inOutChart">
         <div class="public-title">入库/出库信息</div>
-        <inOut />
+        <el-radio-group v-model="tabPosition" class="tab-chart" @change="tabClick">
+          <el-radio-button label="w">本周</el-radio-button>
+          <el-radio-button label="e">本月</el-radio-button>
+          <el-radio-button label="c">全年</el-radio-button>
+        </el-radio-group>
+        <inOut class="deChart" />
       </div>
       <div class="libs">
         <div class="left">
           <div class="public-title">库存使用情况</div>
-          <lib-use />
+          <div class="container">
+            <lib-use class="deChart" />
+          </div>
         </div>
         <div class="right">
           <div class="public-title">库存使用情况</div>
-          <lib-details />
+          <div class="container">
+            <lib-details class="deChart" />
+          </div>
         </div>
       </div>
     </div>
@@ -66,6 +71,12 @@
 </template>
 
 <script>
+import {
+  getAreaUseStatus,
+  getStockUseStatus,
+  getTodo,
+  getInOutData
+} from '@/api/dashboard'
 import noteItem from './components/noteItem.vue'
 import todoItem from './components/todoItem.vue'
 import taskItem from './components/taskItem.vue'
@@ -80,6 +91,82 @@ export default {
     inOut,
     libDetails,
     libUse
+  },
+  created() {
+    this.getLibsUseStatus()
+    this.getStockUseStatus()
+    this.getTodo()
+    this.getInOutData()
+  },
+  data() {
+    return {
+      // 仓库状态参数，周w,月e,年c
+      dimension: 'w',
+      // 获取到的出入库信息
+      inOutData: {},
+      // todoList
+      todoList: [],
+      // 通知公告
+      notices: [
+        {
+          title: '紧急盘点通知',
+          time: '2020.12.30 18:23:14'
+        },
+        {
+          title: '运维服务更新通知',
+          time: '2021.01.25 18:23:14'
+        },
+        {
+          title: '客户入库变更通知',
+          time: '2021.01.26 18:23:14'
+        },
+        {
+          title: '五一放假通知',
+          time: '2021.02.15 18:23:14'
+        },
+        {
+          title: '品达物流系统对接通知',
+          time: '2021.3.25 18:23:14'
+        }
+      ],
+      // 默认位置
+      tabPosition: 'w'
+    }
+  },
+  methods: {
+    tabClick(label) {
+      // 切换时传回label值，赋值给dimension
+      this.dimension = label
+      // 调用获取出入库信息方法
+      this.getInOutData()
+    },
+    // 获取库存状态
+    async getLibsUseStatus() {
+      let res = await getAreaUseStatus()
+      res = [
+        { value: 348, name: '拣货区' },
+        { value: 487, name: '出货区' },
+        { value: 677, name: '暂存库区' },
+        { value: 126, name: '进货暂存区' },
+        { value: 298, name: '出货暂存区' }
+      ]
+      this.$store.commit('echarts/changeOptAreaUse', res)
+    },
+    // 获取仓库状态
+    async getStockUseStatus() {
+      const res = await getStockUseStatus()
+      this.$store.commit('echarts/changeOptStockUse', res)
+    },
+    // 获取代办项
+    async getTodo() {
+      const res = await getTodo()
+      this.todoList = res
+    },
+    // 获取出入库信息
+    async getInOutData() {
+      const res = await getInOutData(this.dimension)
+      this.$store.commit('echarts/changeOptInOut', res)
+    }
   }
 }
 </script>
@@ -207,7 +294,7 @@ export default {
   }
 }
 .task {
-  width: 100%;
+  width: 88%;
   min-width: 1014px;
   height: 188px;
   background: #fff;
@@ -224,7 +311,8 @@ export default {
   }
 }
 .inOutChart {
-  width: 100%;
+  position: relative;
+  width: 88%;
   min-width: 1014px;
   height: 500px;
   background: #fff;
@@ -235,9 +323,32 @@ export default {
     padding-top: 25px;
     margin-left: 25px;
   }
+  .deChart {
+    height: 430px;
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    position: relative;
+    .canvas {
+      left: -50px !important;
+    }
+  }
+}
+.tab-chart {
+  z-index: 888;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  .is-active {
+    /deep/span {
+      background-color: #ffb200;
+      border-color: #ffb200;
+      box-shadow: -1px 0 0 0 #ffb200;
+    }
+  }
 }
 .libs {
-  width: 100%;
+  width: 88%;
   min-width: 1014px;
   height: 354px;
   margin-top: 20px;
@@ -252,12 +363,33 @@ export default {
     box-shadow: 0 0 6px 0 rgb(144 142 142 / 17%);
     border-radius: 12px;
     margin-right: 30px;
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .deChart {
+        width: 220px;
+        height: 220px;
+        margin-top: -60px;
+      }
+    }
   }
   .right {
     flex: 7;
     background: #fff;
     box-shadow: 0 0 6px 0 rgb(144 142 142 / 17%);
     border-radius: 12px;
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .deChart {
+        width: 800px;
+        height: 400px;
+        margin-top: -60px;
+        margin-left: -300px;
+      }
+    }
   }
 }
 </style>
